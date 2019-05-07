@@ -1,5 +1,5 @@
 from pubsub import pub
-from server.bus_listener import BusListener
+from bus_listener import BusListener
 
 
 controlTopic = 'controlTopic'
