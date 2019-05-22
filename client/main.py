@@ -1,10 +1,13 @@
 import connection
 import keyboard_input as keyboard
-import camera.receive_video as video
+import camera.client_video as video
+import threading
+
 
 def main():
     connection.connect()
-    keyboard.start_input()
-    video.startReceive()
+    threading.Thread(target=keyboard.start_input).start()
+    video.run_show_image()
+
 
 main()

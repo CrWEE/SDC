@@ -5,6 +5,7 @@ import bus
 
 def start_receiving():
     server_socket = socket.socket()
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     host = '192.168.0.31'
     port = 1234
     server_socket.bind((host, port))
