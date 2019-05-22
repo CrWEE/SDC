@@ -1,15 +1,13 @@
-from threading import Thread
 import socket
 import struct
 import cv2
 import numpy
 
-# --- constants ---
-
 # address = ("192.168.1.158", 12801)
 ADDRESS = ("192.168.0.31", 1235)
 
 SURFACE_SIZE = (680, 480)
+
 
 def run_show_image():
 
