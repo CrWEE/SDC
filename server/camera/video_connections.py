@@ -1,19 +1,32 @@
 import socket
+import socketserver
 from .camera import CameraFeed
 
 
+class UDPSocketHandler(socketserver.BaseRequestHandler):
+
+    def __init__(self, request, client_address, server):
+        super(UDPSocketHandler, self).__init__(request, client_address, server)
+
+    def handle(self):
+        current_socket = self.request[1]
+        print("{} connected".format(self.client_address[0]))
+        self.camera_feed.add_socket_connection(current_socket)
+
+
 def start_video_connection():
-    server_socket = socket.socket()
-    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    host = get_ip_address()
-    port = 1235
-    server_socket.bind((host, port))
+    try:
+        host = get_ip_address()
+        port = 1235
 
-    server_socket.listen(5)
-    conn, address = server_socket.accept()
-    print("Connected to - ", address, "\n")
+        camera_feed = CameraFeed()
+        camera_feed.send_images()
+        with socketserver.UDPServer((host, port), UDPSocketHandler) as server:
+            server.camera_feed = camera_feed
+            server.serve_forever()
 
-    CameraFeed(conn).send_images()
+    except Exception as e:
+        print(e)
 
 
 def get_ip_address():

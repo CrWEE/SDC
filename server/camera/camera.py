@@ -7,15 +7,21 @@ import cv2
 
 class CameraFeed:
 
-    def __init__(self, socket):
-        self.socket = socket
+    def __init__(self):
+        self.socket_list = []
+
+    def add_socket_connection(self, socket):
+        self.socket_list.append(socket)
+
+    def remove_socket_connection(self, socket):
+        self.socket_list.remove(socket)
 
     def send_images(self):
         print("Start sending images")
         # initialize the camera and grab a reference to the raw camera capture
         camera = PiCamera()
         camera.resolution = (640, 480)
-        camera.framerate = 32
+        camera.frame_rate = 32
         raw_capture = PiRGBArray(camera, size=(640, 480))
 
         # capture frames from the camera
@@ -28,8 +34,9 @@ class CameraFeed:
             print('len:', len(img_str))
 
             len_str = struct.pack('!i', len(img_str))
-            self.socket.send(len_str)
-            self.socket.send(img_str)
+            for s in self.socket_list:
+                s.sendall(len_str)
+                s.sendall(img_str)
             # clear the stream in preparation for the next frame
             #time.sleep(0.5)
             raw_capture.truncate(0)
