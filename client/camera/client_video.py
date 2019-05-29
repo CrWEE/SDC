@@ -1,26 +1,21 @@
-import socket
 import struct
 import cv2
 import numpy
 
-# address = ("192.168.1.158", 12801)
-ADDRESS = ("192.168.0.31", 1235)
-
 SURFACE_SIZE = (680, 480)
 
 
-def run_show_image():
+def run_show_image(socket_s):
 
     print("Running image processing")
 
-    s = socket.socket()
-    s.connect(ADDRESS)
+
 
     try:
         running = True
         while running:
             # receive size
-            len_str = s.recv(4)
+            len_str = socket_s.recv(4)
             size = struct.unpack('!i', len_str)[0]
 
             print('size:', size)
@@ -31,9 +26,9 @@ def run_show_image():
 
             while size > 0:
                 if size >= 4096:
-                    data = s.recv(4096)
+                    data = socket_s.recv(4096)
                 else:
-                    data = s.recv(size)
+                    data = socket_s.recv(size)
 
                 if not data:
                     break
@@ -55,4 +50,4 @@ def run_show_image():
     finally:
         # exit
         print("Closing socket and exit")
-        s.close()
+        socket_s.close()

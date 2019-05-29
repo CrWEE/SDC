@@ -1,13 +1,13 @@
 from pubsub import pub
-from bus_listener import BusListener
 
 
 controlTopic = 'controlTopic'
 speedTopic = 'speedTopic'
-busListener = BusListener()
+socketTopic = 'socketTopic'
 
 
-def init_buses():
-    pub.subscribe(busListener.process_control_event, controlTopic)
-    pub.subscribe(busListener.process_speed_event, speedTopic)
+def init_buses(bus_listener):
+    pub.subscribe(bus_listener.process_control_event, controlTopic)
+    pub.subscribe(bus_listener.process_speed_event, speedTopic)
+    pub.subscribe(bus_listener.process_socket_event, socketTopic)
     print('Registered pubsub system')
