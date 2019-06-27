@@ -19,7 +19,8 @@ def run_show_image(socket_s):
             size = struct.unpack('!i', len_str)[0]
 
             print('size:', size)
-
+            if size > 200000 or size <= 0:
+                continue
             # receive string
 
             img_str = b''

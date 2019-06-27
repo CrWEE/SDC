@@ -1,9 +1,7 @@
-from payloads import ControlPayload
 import controller
 
+
 class BusListener:
-    def __init__(self, camera_feed):
-        self.camera_feed = camera_feed
 
     def process_control_event(self, msg):
         print('Method Listener.process_control_event received: ', repr(msg))
@@ -20,12 +18,6 @@ class BusListener:
             controller.right()
         if 'STRAIGHT' == msg:
             controller.straight()
-
-    def process_socket_event(self, msg, msg_type):
-        if msg_type == 'ADD':
-            self.camera_feed.add_socket(msg)
-        elif msg_type == 'REMOVE':
-            self.camera_feed.remove_socket(msg)
 
     def process_speed_event(self, msg):
         print('Method Listener.process_speed_event received: ', repr(msg))

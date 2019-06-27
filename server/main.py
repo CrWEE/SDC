@@ -12,14 +12,13 @@ def exit_handler():
 
 
 def main():
-    camera_feed = CameraFeed()
-    bus_listener = BusListener(camera_feed)
+    bus_listener = BusListener()
     bus.init_buses(bus_listener)
 
-    atexit.register(exit_handler)
+    camera_feed = CameraFeed()
+    threading.Thread(target=videocon.start_video_connection, args=[camera_feed]).start()
 
-    threading.Thread(target=videocon.start_video_connection).start()
-    threading.Thread(target=camera_feed.send_images()).start()
+    atexit.register(exit_handler)
 
 
 main()

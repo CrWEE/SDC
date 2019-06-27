@@ -1,36 +1,29 @@
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-import struct # to send `int` as  `4 bytes`
-import cv2
-
+import threading
+import io
 
 class CameraFeed:
 
     def __init__(self):
-        self.sockets = []
+        self.thread = threading.Thread(target=self._record_image)
+        self.thread.daemon = True
+        self.thread.start()
+        self.image = None
 
-    def add_socket(self, socket):
-        self.sockets.append(socket)
-
-    def remove_socket(self, socket):
-        self.sockets.remove(socket)
-
-    def send_images(self):
+    def _record_image(self):
         print("Start sending images")
         # initialize the camera and grab a reference to the raw camera capture
         camera = PiCamera()
         camera.resolution = (640, 480)
-        camera.framerate = 32
-        raw_capture = PiRGBArray(camera, size=(640, 480))
+        camera.framerate = 24
+        stream = io.BytesIO()
 
         # capture frames from the camera
-        for frame in camera.capture_continuous(raw_capture, format="bgr", use_video_port=True):
-            image = frame.array
-            img_str = cv2.imencode('.jpg', image)[1].tostring()
+        for frame in camera.capture_continuous(stream, format="jpeg", use_video_port=True):
+            stream.seek(0)
+            self.image = stream.read()
+            stream.seek(0)
+            stream.truncate(0)
 
-            len_str = struct.pack('!i', len(img_str))
-            for s in self.sockets:
-                s.send(len_str)
-                s.send(img_str)
 
-            raw_capture.truncate(0)

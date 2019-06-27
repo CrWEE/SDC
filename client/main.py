@@ -7,11 +7,16 @@ import socket
 
 def main():
     ADDRESS = ("192.168.0.31", 1235)
-    s = socket.socket()
-    s.connect(ADDRESS)
-    connection.clientSocket = s
+    socket_command = socket.socket()
+    socket_command.connect(ADDRESS)
+    socket_command.sendall('CONTROL'.encode('utf-8'))
+    connection.clientSocket = socket_command
     threading.Thread(target=keyboard.start_input).start()
-    video.run_show_image(s)
+
+    socket_video = socket.socket()
+    socket_video.connect(ADDRESS)
+    socket_video.sendall('VIDEO'.encode('utf-8'))
+    video.run_show_image(socket_video)
 
 
 main()

@@ -2,9 +2,13 @@ import socket
 import select
 from pubsub import pub
 import bus
+import threading
+import struct
+
+from bus_listener import BusListener
 
 
-def start_video_connection():
+def start_video_connection(camera_feed):
     try:
         connection_list = []
         recv_buffer = 4096
@@ -27,27 +31,46 @@ def start_video_connection():
                 # New connection
                 if sock == server_socket:
                     sockfd, addr = server_socket.accept()
+                    data = sockfd.recv(recv_buffer)
+                    if data:
+                        data_string = data.decode('utf-8')
+                        print("Client connected: ", addr, "with type: ", data_string)
+                        if data_string == 'VIDEO':
+                            threading.Thread(target=send_stream_to_client, args=[sockfd, camera_feed]).start()
                     connection_list.append(sockfd)
-                    print("Client connected: ", addr)
-                    pub.sendMessage(bus.socketTopic, msg=sockfd, msg_type='ADD')
                 # Handle messages
                 else:
                     try:
                         data = sock.recv(recv_buffer)
                         if data:
                             data_string = data.decode('utf-8')
-                            print(data_string)
-                            pub.sendMessage(bus.controlTopic, msg=data_string)
+                            print("Received command: ", data_string)
+                            BusListener().process_control_event(data_string)
+                            # TODO fix bus... probably threading issue
+                            pub.sendMessage(bus.controlTopic, msg=(data_string,data_string))
                     # On connection reset etc. remove the socket from the list
                     except:
                         sock.close()
                         connection_list.remove(sock)
-                        print("Client disconnected: ", addr)
-                        pub.sendMessage(bus.socketTopic, msg=sockfd, msg_type='REMOVE')
+                        print("Client disconnected (start_video_connection): ", addr)
                         continue
 
     except Exception as e:
-        print("Error occured: ", e)
+        print("Error occurred (start_video_connection): ", e)
+
+
+# Runs in a new thread, send the actual captured image to a single client
+def send_stream_to_client(socket_c, camera_feed):
+    while 1:
+        try:
+            image = camera_feed.image[:]
+            length_bytes = struct.pack('!i', len(image))
+            socket_c.send(length_bytes)
+            socket_c.send(image)
+        except:
+            socket_c.close()
+            print("Client disconnected (send_stream_to_client): ", socket_c)
+            return
 
 
 def get_ip_address():
