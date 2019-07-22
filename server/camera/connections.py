@@ -5,8 +5,6 @@ import bus
 import threading
 import struct
 
-from bus_listener import BusListener
-
 
 def start_video_connection(camera_feed):
     try:
@@ -45,9 +43,7 @@ def start_video_connection(camera_feed):
                         if data:
                             data_string = data.decode('utf-8')
                             print("Received command: ", data_string)
-                            BusListener().process_control_event(data_string)
-                            # TODO fix bus... probably threading issue
-                            pub.sendMessage(bus.controlTopic, msg=(data_string,data_string))
+                            pub.sendMessage(bus.controlTopic, msg=data_string)
                     # On connection reset etc. remove the socket from the list
                     except:
                         sock.close()
