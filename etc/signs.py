@@ -16,8 +16,8 @@ def ORB_detector(image, original):
     cv2.imshow('Final image', img3)
     return matches
 
-image = cv2.imread('resources/stop1.jpg')
-original = cv2.imread('resources/stop_original.jpg', 0)
+image = cv2.imread('../resources/stop1.jpg')
+original = cv2.imread('../resources/stop_original.jpg', 0)
 cv2.imshow('Original Image', image)
 cv2.waitKey(0)
 

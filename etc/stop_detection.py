@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 
+body_classifier = cv2.CascadeClassifier('../resources/Stopsign_HAAR_19Stages.xml')
+cap = cv2.VideoCapture(0)
+
 
 def detect(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -12,9 +15,6 @@ def detect(image):
     image = cv2.flip(image,1)
     return image
 
-
-body_classifier = cv2.CascadeClassifier('resources/Stopsign_HAAR_19Stages.xml')
-cap = cv2.VideoCapture(0)
 
 while True:
 

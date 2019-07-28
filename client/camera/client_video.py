@@ -18,7 +18,7 @@ def run_show_image(socket_s):
             len_str = socket_s.recv(4)
             size = struct.unpack('!i', len_str)[0]
 
-            print('size:', size)
+            #print('size:', size)
             if size > 200000 or size <= 0:
                 continue
             # receive string
@@ -37,7 +37,7 @@ def run_show_image(socket_s):
                 size -= len(data)
                 img_str += data
 
-            print('len:', len(img_str))
+            #print('len:', len(img_str))
             # convert string to surface
 
             nparr = numpy.fromstring(img_str, numpy.uint8)
